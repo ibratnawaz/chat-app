@@ -25,6 +25,10 @@ const removeUser = (id) => {
 
 const getUser = (id) => users.find((user) => user.id === id)
 
-const getUserInRoom = (room) => users.filter((user) => user.room === room)
+const getUserInRoom = (room, name) => {
+  name = name.trim().toLowerCase()
+  let user = users.find((user) => user.room === room && user.name === name)
+  return user
+}
 
 module.exports = { addUser, removeUser, getUser, getUserInRoom }

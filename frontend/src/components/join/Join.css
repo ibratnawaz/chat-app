@@ -51,6 +51,13 @@ body {
   width: 100%;
 }
 
+small {
+  color: red;
+  text-align: left;
+  display: flex;
+  margin-top: 10px;
+}
+
 .mt-20 {
   margin-top: 20px;
 }

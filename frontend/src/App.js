@@ -7,7 +7,7 @@ function App() {
   return (
     <Router>
       <Route path='/' exact component={Join} />
-      <Route path='/chat' exact component={Chat} />
+      <Route path='/chat' component={Chat} />
     </Router>
   )
 }

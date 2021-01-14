@@ -2,7 +2,7 @@ require('dotenv').config()
 const express = require('express')
 const http = require('http')
 const socketio = require('socket.io')
-const { addUser, getUser, getUserInRoom, removeUser } = require('./util/users')
+const { addUser, getUser, removeUser, getUserInRoom } = require('./util/users')
 
 const port = process.env.PORT || 5000
 
@@ -13,7 +13,7 @@ const io = socketio(server)
 io.on('connect', (socket) => {
   socket.on('join', ({ name, room }, cb) => {
     const { error, user } = addUser({ id: socket.id, name, room })
-
+    console.log('user joined', user)
     if (error) return cb(error)
 
     socket.join(user.room)
@@ -45,10 +45,10 @@ io.on('connect', (socket) => {
         user: 'Admin',
         text: `${user.name} has left.`,
       })
-      io.to(user.room).emit('roomData', {
-        room: user.room,
-        users: getUsersInRoom(user.room),
-      })
+      // io.to(user.room).emit('roomData', {
+      //   room: user.room,
+      //   users: getUsersInRoom(user.room),
+      // })
     }
   })
 })

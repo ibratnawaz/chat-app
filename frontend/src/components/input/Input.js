@@ -1,14 +1,20 @@
 import React from 'react'
 import './Input.css'
 
-const Input = () => {
+const Input = ({ setMessage, sendMessage, message }) => {
+  const submitHandler = (e) => {
+    e.preventDefault()
+    if (message) sendMessage(e)
+  }
+
   return (
-    <form className='form'>
+    <form className='form' onSubmit={submitHandler}>
       <input
         className='input'
         type='text'
         placeholder='Type a message...'
-        value=''
+        value={message}
+        onChange={(e) => setMessage(e.target.value)}
       />
       <button className='sendButton' type='submit'>
         Send
