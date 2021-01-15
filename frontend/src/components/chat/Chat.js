@@ -17,8 +17,13 @@ const Chat = ({ location }) => {
 
   useEffect(() => {
     const { name, room } = queryString.parse(location.search)
-
-    socket = io('/')
+    const connectionOptions = {
+      'force new connection': true,
+      reconnectionAttempts: 'Infinity',
+      timeout: 10000,
+      transports: ['websocket'],
+    }
+    socket = io('http://localhost:5000/', connectionOptions)
 
     setRoom(room)
     setName(name)

@@ -2,7 +2,8 @@ require('dotenv').config()
 const express = require('express')
 const http = require('http')
 const socketio = require('socket.io')
-const { addUser, getUser, removeUser, getUserInRoom } = require('./util/users')
+const cors = require('cors')
+const { addUser, removeUser, getUser, getUsersInRoom } = require('./util/users')
 
 const port = process.env.PORT || 5000
 
@@ -10,11 +11,13 @@ const app = express()
 const server = http.createServer(app)
 const io = socketio(server)
 
+app.use(cors())
+
 io.on('connect', (socket) => {
-  socket.on('join', ({ name, room }, cb) => {
+  socket.on('join', ({ name, room }, callback) => {
     const { error, user } = addUser({ id: socket.id, name, room })
-    console.log('user joined', user)
-    if (error) return cb(error)
+
+    if (error) return callback(error)
 
     socket.join(user.room)
 
@@ -26,15 +29,20 @@ io.on('connect', (socket) => {
       .to(user.room)
       .emit('message', { user: 'admin', text: `${user.name} has joined!` })
 
-    cb()
+    io.to(user.room).emit('roomData', {
+      room: user.room,
+      users: getUsersInRoom(user.room),
+    })
+
+    callback()
   })
 
-  socket.on('sendMessage', (msg, cb) => {
+  socket.on('sendMessage', (message, callback) => {
     const user = getUser(socket.id)
 
     io.to(user.room).emit('message', { user: user.name, text: message })
 
-    cb()
+    callback()
   })
 
   socket.on('disconnect', () => {
@@ -45,20 +53,18 @@ io.on('connect', (socket) => {
         user: 'Admin',
         text: `${user.name} has left.`,
       })
-      // io.to(user.room).emit('roomData', {
-      //   room: user.room,
-      //   users: getUsersInRoom(user.room),
-      // })
+      io.to(user.room).emit('roomData', {
+        room: user.room,
+        users: getUsersInRoom(user.room),
+      })
     }
   })
 })
 
 if (process.env.NODE_ENV === 'development') {
   app.get('/', (req, res) => {
-    res.send('API is running...')
+    res.send('Server is running...')
   })
 }
 
-server.listen(port, () => {
-  console.log(`Server running on port ${port}`)
-})
+server.listen(port, () => console.log(`Server is running on port ${port}.`))
