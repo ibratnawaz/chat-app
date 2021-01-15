@@ -23,7 +23,7 @@ const Chat = ({ location }) => {
       timeout: 10000,
       transports: ['websocket'],
     }
-    socket = io('http://localhost:5000/', connectionOptions)
+    socket = io('https://nawaz-chat-app.herokuapp.com/', connectionOptions)
 
     setRoom(room)
     setName(name)
